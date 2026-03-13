@@ -15,7 +15,7 @@ const config: Config = {
     },
 
     // Set the production url of your site here
-    url: 'http://localhost:3000',
+    url: process.env.PRODUCTION_URL ?? 'http://localhost:3000',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: '/',
@@ -83,11 +83,12 @@ const config: Config = {
             respectPrefersColorScheme: true,
         },
         algolia: {
-            appId: '4NFQAL2J5A',
-            apiKey: 'b64f9f2b583cf9cdcfed211e24b0275b',
+            appId: process.env.APPLICATION_ID ?? 'test',
+            apiKey: process.env.ALGOLIA_SEARCH_API_KEY ?? 'test',
             indexName: 'my-docs-local',
             contextualSearch: false,
             searchPagePath: 'search',
+            insights: true,
         },
         navbar: {
             title: 'SelectPrism',
@@ -154,7 +155,7 @@ const config: Config = {
                     ],
                 },
             ],
-            copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+            copyright: `Copyright © ${new Date().getFullYear()} Selectprism Documentation, Inc. Built with Docusaurus.`,
         },
         prism: {
             theme: prismThemes.github,
@@ -164,3 +165,11 @@ const config: Config = {
 };
 
 export default config;
+
+/**
+ * docker run --rm --platform linux/amd64 \
+-e APPLICATION_ID=4NFQAL2J5A \
+-e API_KEY=0318d67eb026e6b44be1d7633fded5db \
+-e "CONFIG=$(cat docsearch-config.json | jq -r tostring)" \
+algolia/docsearch-scraper
+ */
