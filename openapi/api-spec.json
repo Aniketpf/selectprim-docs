@@ -8,27 +8,7 @@
   "servers": [
     {
       "url": "https://recruit-server.pfuat.xyz/user-app/api/external",
-      "description": "Local development server"
-    },
-    {
-      "url": "https://{host}/v3/inbounds/clients/{clientId}/types",
-      "description": "Production API",
-      "variables": {
-        "host": {
-          "default": "api.prismtechnology.xyz",
-          "enum": [
-            "api.prismtechnology.xyz",
-            "api.pfsit.xyz",
-            "api.pfuat.xyz",
-            "api.prismforce.com"
-          ],
-          "description": "Target environment host"
-        },
-        "clientId": {
-          "default": "",
-          "description": "Integration Layer Client ID"
-        }
-      }
+      "description": "UAT Server"
     }
   ],
   "security": [
@@ -37,6 +17,249 @@
     }
   ],
   "paths": {
+    "/candidates/assessments": {
+      "post": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Create candidate assessment",
+        "description": "Create an assessment for a candidate on a specific job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CandidateAssessmentRequest"
+              },
+              "example": {
+                "assessmentId": "assessment_123",
+                "candidateId": "candidate_456",
+                "candidateAssessmentId": "ca_789"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Candidate assessment created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateAssessmentSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Assessment or candidate not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateAssessmentInternalErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search-and-match/webhook": {
+      "post": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Search and match webhook",
+        "description": "Webhook endpoint to receive search and match processing results",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchAndMatchWebhookRequest"
+              },
+              "example": {
+                "client_id": "client_123",
+                "doc_id": "doc_456",
+                "status": "completed",
+                "doc_type": "resume",
+                "timestamp": "2026-03-11T10:30:00.000Z",
+                "parent_id": "parent_789",
+                "pii_info": {
+                  "name": [
+                    "John Doe"
+                  ],
+                  "email": "john.doe@example.com",
+                  "mobile_number": "+91-9876543210",
+                  "links": [
+                    "https://linkedin.com/in/johndoe"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchAndMatchWebhookSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid webhook API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - invalid or missing webhook API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Webhook processing error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmptyObjectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search-and-match/{externalCandidateAssessmentId}/candidate-assessments": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Get search and match data",
+        "description": "Retrieve search and match data for a specific candidate assessment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "externalCandidateAssessmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ext_ca_123456",
+            "description": "External candidate assessment ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search and match data found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchAndMatchDataSuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Search and Match data not found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusMessageTimestampErrorResponse404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusMessageTimestampErrorResponse500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/candidates": {
       "post": {
         "tags": [
@@ -75,11 +298,18 @@
         },
         "responses": {
           "201": {
-            "description": "Candidates added successfully",
+            "description": "Candidates added successfully (sync returns result array; async returns requestId and candidateCount)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/AddCandidatesSuccessResponseSync"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AddCandidatesSuccessResponseAsync"
+                    }
+                  ]
                 }
               }
             }
@@ -113,6 +343,16 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -123,7 +363,7 @@
           "Candidates"
         ],
         "summary": "Attach resume to candidate",
-        "description": "Upload and attach a resume file to an existing candidate",
+        "description": "Upload and attach a resume file to an existing candidate.\nValid file types are **pdf**, **docx**, and **doc**.\n",
         "security": [
           {
             "bearerAuth": []
@@ -151,7 +391,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
+                  "$ref": "#/components/schemas/ResumeUploadSuccessResponse"
                 }
               }
             }
@@ -176,103 +416,12 @@
               }
             }
           },
-          "404": {
-            "description": "Candidate not found",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/candidates/assessments": {
-      "post": {
-        "tags": [
-          "Candidates"
-        ],
-        "summary": "Create candidate assessment",
-        "description": "Create an assessment for a candidate on a specific job",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CandidateAssessmentRequest"
-              },
-              "example": {
-                "assessmentId": "assessment_123",
-                "candidateId": "candidate_456",
-                "candidateAssessmentId": "ca_789"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Candidate assessment created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Assessment or candidate not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
+                  "$ref": "#/components/schemas/ResumeUploadErrorResponse"
                 }
               }
             }
@@ -308,22 +457,12 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Interview created successfully",
+          "202": {
+            "description": "Interview creation request accepted (processing asynchronously)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AcceptedResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                  "$ref": "#/components/schemas/InterviewCreationSuccessResponse"
                 }
               }
             }
@@ -343,17 +482,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ConflictError"
+                  "$ref": "#/components/schemas/DuplicateEventErrorResponse"
                 }
               }
             }
           },
-          "429": {
-            "description": "Too many requests - rate limit exceeded",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
+                  "$ref": "#/components/schemas/InterviewCreationErrorResponse"
                 }
               }
             }
@@ -389,42 +528,22 @@
           }
         },
         "responses": {
-          "202": {
+          "200": {
             "description": "Interview regeneration request accepted",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AcceptedResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                  "$ref": "#/components/schemas/InterviewRegenerateSuccessResponse"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Unauthorized - invalid or missing bearer token",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Interview not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -434,75 +553,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ConflictError"
+                  "$ref": "#/components/schemas/DuplicateEventErrorResponse"
                 }
               }
             }
           },
-          "429": {
-            "description": "Rate limit exceeded",
+          "500": {
+            "description": "Internal server error (only error response for this endpoint)",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/interviews/results/{interviewResultId}": {
-      "get": {
-        "tags": [
-          "Interviews"
-        ],
-        "summary": "Get interview results",
-        "description": "Retrieve detailed results for a completed interview",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "interviewResultId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "result_123456",
-            "description": "Interview result ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Interview results retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Interview result not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/StatusMessageTimestampErrorResponse500"
                 }
               }
             }
@@ -540,7 +601,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
+                  "$ref": "#/components/schemas/RecordingDetailsSuccessResponse"
                 }
               }
             }
@@ -560,7 +621,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/RecordingDetailsErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordingDetailsErrorResponse"
                 }
               }
             }
@@ -598,7 +669,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
+                  "$ref": "#/components/schemas/ProctoringDataSuccessResponse"
                 }
               }
             }
@@ -618,7 +689,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ProctoringDataErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProctoringDataErrorResponse"
                 }
               }
             }
@@ -626,31 +707,43 @@
         }
       }
     },
-    "/job-assessments": {
+    "/interviews/results/{interviewResultId}": {
       "get": {
         "tags": [
-          "Job Assessments"
+          "Interviews"
         ],
-        "summary": "Get all job assessments",
-        "description": "Retrieve a list of all job assessments for the authenticated client",
+        "summary": "Get interview results",
+        "description": "Retrieve detailed results for a completed interview",
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "name": "interviewResultId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "result_123456",
+            "description": "Interview result ID"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of job assessments retrieved successfully",
+            "description": "Interview results retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
+                  "$ref": "#/components/schemas/InterviewResultsSuccessResponse"
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized - invalid or missing token",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -659,18 +752,30 @@
               }
             }
           },
-          "429": {
-            "description": "Rate limit exceeded",
+          "404": {
+            "description": "Interview result not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
+                  "$ref": "#/components/schemas/InterviewResultsDataErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterviewResultsDataErrorResponse"
                 }
               }
             }
           }
         }
-      },
+      }
+    },
+    "/job-assessments": {
       "post": {
         "tags": [
           "Job Assessments"
@@ -693,12 +798,31 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Job assessment created successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "assessmentId": {
+                          "type": "string",
+                          "example": "jba_123456"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Assessment created successfully"
+                    }
+                  }
                 }
               }
             }
@@ -723,292 +847,44 @@
               }
             }
           },
-          "429": {
-            "description": "Rate limit exceeded",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/job-assessments/{assessmentId}/candidates": {
-      "post": {
-        "tags": [
-          "Job Assessments"
-        ],
-        "summary": "Add candidates to a job assessment",
-        "description": "Add one or more candidates to a specific job assessment",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "assessmentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "assessment_123",
-            "description": "Job assessment ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddCandidatesRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Candidates added successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/job-assessments/{assessmentId}/configs": {
-      "post": {
-        "tags": [
-          "Job Assessments"
-        ],
-        "summary": "Configure job assessment questions",
-        "description": "Configure the number and types of questions for a job assessment",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "assessmentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "assessment_123",
-            "description": "Job assessment ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JobAssessmentConfigRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Configuration updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/job-assessments/configs": {
-      "post": {
-        "tags": [
-          "Job Assessments"
-        ],
-        "summary": "Configure job assessment questions (without ID in path)",
-        "description": "Configure the number and types of questions for a job assessment using assessmentId in body",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JobAssessmentConfigRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Configuration updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RateLimitError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/job-assessments/{assessmentId}/interviews/counts": {
-      "get": {
-        "tags": [
-          "Job Assessments"
-        ],
-        "summary": "Get interview statistics for a job assessment",
-        "description": "Retrieve count and statistics of interviews for a specific job assessment",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "assessmentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "assessment_123",
-            "description": "Job assessment ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Interview statistics retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Assessment not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "success",
+                    "error"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "details"
+                      ],
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "internal server error"
+                        },
+                        "details": {
+                          "type": "string",
+                          "example": "An internal server error occurred"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1075,208 +951,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OAuthErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/oauth/credentials/generate": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "Generate OAuth client credentials",
-        "description": "Generate new OAuth client ID and secret for a user (requires authentication and permissions)",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GenerateCredentialsRequest"
-              },
-              "example": {
-                "userId": "user_123456",
-                "clientId": "client_789"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Credentials generated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GenerateCredentialsResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - invalid or missing token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden - insufficient permissions",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/search-and-match/webhook": {
-      "post": {
-        "tags": [
-          "Search & Match"
-        ],
-        "summary": "Search and match webhook",
-        "description": "Webhook endpoint to receive search and match processing results",
-        "security": [
-          {
-            "webhookApiKey": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SearchAndMatchWebhookRequest"
-              },
-              "example": {
-                "client_id": "client_123",
-                "doc_id": "doc_456",
-                "status": "completed",
-                "doc_type": "resume",
-                "timestamp": "2026-03-11T10:30:00.000Z",
-                "parent_id": "parent_789",
-                "pii_info": {
-                  "name": [
-                    "John Doe"
-                  ],
-                  "email": "john.doe@example.com",
-                  "mobile_number": "+91-9876543210",
-                  "links": [
-                    "https://linkedin.com/in/johndoe"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Webhook processed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - invalid webhook API key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/search-and-match/{externalCandidateAssessmentId}/candidate-assessments": {
-      "get": {
-        "tags": [
-          "Search & Match"
-        ],
-        "summary": "Get search and match data",
-        "description": "Retrieve search and match data for a specific candidate assessment",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "externalCandidateAssessmentId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "ext_ca_123456",
-            "description": "External candidate assessment ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Search and match data retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnauthorizedError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Candidate assessment not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2156,6 +1830,37 @@
           }
         }
       },
+      "DuplicateEventErrorResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "example": 409,
+            "description": "HTTP status code"
+          },
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Duplicate request"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "CONFLICT"
+              },
+              "details": {
+                "type": "string",
+                "example": "Request with this eventId has already been processed"
+              }
+            }
+          }
+        }
+      },
       "SuccessResponse": {
         "type": "object",
         "properties": {
@@ -2242,30 +1947,9 @@
       "UnauthorizedError": {
         "type": "object",
         "properties": {
-          "statusCode": {
-            "type": "integer",
-            "example": 401
-          },
-          "success": {
-            "type": "boolean",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "example": "Unauthorized - invalid or missing authentication token"
-          },
           "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string",
-                "example": "UNAUTHORIZED"
-              },
-              "details": {
-                "type": "string",
-                "example": "Invalid or expired token"
-              }
-            }
+            "type": "string",
+            "example": "Unauthorized"
           }
         }
       },
@@ -2348,6 +2032,914 @@
             "type": "string",
             "example": "Request accepted for processing",
             "description": "Indicates async processing has started"
+          }
+        }
+      },
+      "SearchAndMatchData": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "candidateAssessmentId": {
+            "type": "string",
+            "example": "ca_123456"
+          },
+          "externalCandidateAssessmentId": {
+            "type": "string",
+            "nullable": true,
+            "example": "ext_ca_123456"
+          },
+          "matchScore": {
+            "type": "number",
+            "nullable": true,
+            "example": 78.5
+          },
+          "recommendation": {
+            "type": "string",
+            "example": "Strong match"
+          },
+          "justification": {
+            "type": "string",
+            "nullable": true,
+            "example": "Strong match"
+          }
+        }
+      },
+      "StatusMessageDataSuccessResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "statusCode",
+          "message",
+          "data"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "statusCode": {
+            "type": "integer",
+            "example": 200,
+            "description": "HTTP status code (2xx)"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable success message"
+          },
+          "data": {
+            "type": "object",
+            "description": "Response payload (shape varies by endpoint)"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Optional ISO 8601 timestamp"
+          }
+        }
+      },
+      "SearchAndMatchDataSuccessResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StatusMessageDataSuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "example": "Search and match data found!"
+              },
+              "data": {
+                "$ref": "#/components/schemas/SearchAndMatchData"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 timestamp"
+              }
+            }
+          }
+        ]
+      },
+      "StatusMessageTimestampErrorResponseBase": {
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "timestamp"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "error"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp"
+          }
+        }
+      },
+      "StatusMessageTimestampErrorResponse404": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StatusMessageTimestampErrorResponseBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "statusCode"
+            ],
+            "properties": {
+              "statusCode": {
+                "type": "integer",
+                "example": 404,
+                "description": "HTTP 404 Not Found"
+              }
+            }
+          }
+        ]
+      },
+      "StatusMessageTimestampErrorResponse500": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StatusMessageTimestampErrorResponseBase"
+          },
+          {
+            "type": "object",
+            "required": [
+              "statusCode"
+            ],
+            "properties": {
+              "statusCode": {
+                "type": "integer",
+                "example": 500,
+                "description": "HTTP 500 Internal Server Error"
+              }
+            }
+          }
+        ]
+      },
+      "CandidateAssessmentSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "data",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "required": [
+              "candidateId",
+              "assessmentId",
+              "candidateAssessmentId"
+            ],
+            "properties": {
+              "candidateId": {
+                "type": "string",
+                "example": "candidate_456"
+              },
+              "assessmentId": {
+                "type": "string",
+                "example": "assessment_123"
+              },
+              "candidateAssessmentId": {
+                "type": "string",
+                "example": "ca_789"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "example": "Candidate added to assessment successfully"
+          }
+        }
+      },
+      "CandidateAssessmentInternalErrorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "error",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "details"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "INTERNAL_SERVER_ERROR"
+              },
+              "details": {
+                "type": "string",
+                "example": "Internal Server Error"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "example": "Failed to add candidate to assessment"
+          }
+        }
+      },
+      "SearchAndMatchWebhookSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Webhook received successfully"
+          }
+        }
+      },
+      "ForbiddenResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Forbidden"
+          }
+        }
+      },
+      "EmptyObjectResponse": {
+        "type": "object",
+        "description": "Empty object returned on webhook processing error"
+      },
+      "AddCandidatesSuccessResponseSync": {
+        "type": "object",
+        "required": [
+          "success",
+          "data",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "invitationRequestId": {
+            "type": "string",
+            "description": "Optional invitation request ID (when invite is true)"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Array of candidate upload results"
+          },
+          "message": {
+            "type": "string",
+            "example": "Candidates added successfully"
+          }
+        }
+      },
+      "AddCandidatesSuccessResponseAsync": {
+        "type": "object",
+        "required": [
+          "success",
+          "data",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "required": [
+              "requestId",
+              "candidateCount"
+            ],
+            "properties": {
+              "requestId": {
+                "type": "string",
+                "example": "req_abc123"
+              },
+              "candidateCount": {
+                "type": "integer",
+                "example": 5
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "example": "Candidate addition request submitted for 5 candidates. Candidates will be processed and added to the assessment."
+          }
+        }
+      },
+      "ResumeUploadSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "data",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "description": "Empty object on success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Resume uploaded successfully"
+          }
+        }
+      },
+      "ResumeUploadErrorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "error"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "details"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "INTERNAL_SERVER_ERROR"
+              },
+              "details": {
+                "type": "string",
+                "example": "Internal Server Error"
+              }
+            }
+          }
+        }
+      },
+      "InterviewCreationSuccessResponse": {
+        "type": "object",
+        "required": [
+          "statusCode",
+          "success",
+          "data",
+          "message"
+        ],
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "example": 202
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "description": "Empty object"
+          },
+          "message": {
+            "type": "string",
+            "example": "Interview creation request accepted"
+          }
+        }
+      },
+      "InterviewCreationErrorResponse": {
+        "type": "object",
+        "required": [
+          "statusCode",
+          "success",
+          "error",
+          "message"
+        ],
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "example": 400
+          },
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Interview creation request failed"
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "details"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "VALIDATION_ERROR"
+              },
+              "details": {
+                "type": "string",
+                "example": "Invalid request parameters"
+              }
+            }
+          }
+        }
+      },
+      "InterviewRegenerateSuccessResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StatusMessageDataSuccessResponse"
+          },
+          {
+            "type": "object",
+            "required": [
+              "success"
+            ],
+            "properties": {
+              "statusCode": {
+                "example": 200
+              },
+              "status": {
+                "example": "success"
+              },
+              "success": {
+                "type": "boolean",
+                "example": true
+              },
+              "data": {
+                "type": "object",
+                "description": "Empty object"
+              },
+              "message": {
+                "example": "Interview regeneration request accepted"
+              }
+            }
+          }
+        ]
+      },
+      "RecordingDetailsSuccessResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StatusMessageDataSuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "example": "Recording details retrieved successfully"
+              },
+              "data": {
+                "type": "object",
+                "required": [
+                  "recordingUrl",
+                  "recordingId",
+                  "recordingStatus",
+                  "interviewId"
+                ],
+                "properties": {
+                  "recordingUrl": {
+                    "type": "string",
+                    "example": "https://example.com/recording.mp4"
+                  },
+                  "recordingId": {
+                    "type": "string",
+                    "example": "rec_123456"
+                  },
+                  "recordingStatus": {
+                    "type": "string",
+                    "enum": [
+                      "completed",
+                      "in_progress",
+                      "failed"
+                    ],
+                    "example": "completed"
+                  },
+                  "interviewId": {
+                    "type": "string",
+                    "example": "intv_123456"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "RecordingDetailsErrorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "error"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Error retrieving recording details"
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "details"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "details": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "ProctoringDataSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "data"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Recording details retrieved successfully"
+          },
+          "data": {
+            "type": "object",
+            "required": [
+              "clientId",
+              "interviewId",
+              "details"
+            ],
+            "properties": {
+              "clientId": {
+                "type": "string"
+              },
+              "interviewId": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "ProctoringDataErrorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "error"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Error retrieving recording details"
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "details"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "details": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "InterviewResultsSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "data",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Interview results retrieved successfully"
+          },
+          "data": {
+            "type": "object",
+            "description": "Interview report from getInterviewResults",
+            "properties": {
+              "jobTitle": {
+                "type": "string"
+              },
+              "jobRole": {
+                "type": "string"
+              },
+              "system": {
+                "type": "string",
+                "nullable": true
+              },
+              "jobAssessment": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  },
+                  "requirements": {
+                    "type": "array"
+                  },
+                  "responsibilities": {
+                    "type": "array"
+                  },
+                  "skills": {
+                    "type": "array"
+                  },
+                  "location": {
+                    "type": "object"
+                  },
+                  "employmentType": {
+                    "type": "string"
+                  },
+                  "seniorityLevel": {
+                    "type": "string"
+                  },
+                  "noticePeriod": {
+                    "type": "string"
+                  },
+                  "isManager": {
+                    "type": "boolean"
+                  },
+                  "ctcRange": {
+                    "type": "string"
+                  },
+                  "difficulty": {
+                    "type": "string"
+                  },
+                  "joiningTimeframe": {
+                    "type": "string"
+                  },
+                  "system": {
+                    "type": "string"
+                  },
+                  "systemId": {
+                    "type": "string"
+                  },
+                  "externalSystemId": {
+                    "type": "string"
+                  },
+                  "assessmentType": {
+                    "type": "string"
+                  },
+                  "clientId": {
+                    "type": "string"
+                  },
+                  "createdBy": {
+                    "type": "string"
+                  }
+                }
+              },
+              "interviewData": {
+                "type": "object",
+                "properties": {
+                  "interviewId": {
+                    "type": "string"
+                  },
+                  "interviewCode": {
+                    "type": "string"
+                  },
+                  "scheduledDate": {},
+                  "expiredDate": {},
+                  "startTime": {},
+                  "endTime": {},
+                  "duration": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              },
+              "candidateData": {
+                "type": "object",
+                "properties": {
+                  "candidateId": {
+                    "type": "string"
+                  },
+                  "extCandidateId": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "noticePeriod": {
+                    "type": "string"
+                  },
+                  "yoe": {
+                    "type": "string"
+                  },
+                  "currentRole": {
+                    "type": "string"
+                  },
+                  "currentCtc": {
+                    "type": "string"
+                  },
+                  "currentCity": {
+                    "type": "string"
+                  },
+                  "resumeUrl": {
+                    "type": "string"
+                  }
+                }
+              },
+              "hrQuestions": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "technicalQuestions": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "codingQuestions": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "sectionStatus": {
+                "type": "object",
+                "nullable": true
+              },
+              "summary": {
+                "type": "object",
+                "nullable": true
+              },
+              "proctoring": {
+                "type": "object",
+                "nullable": true
+              },
+              "assessment": {
+                "type": "object",
+                "nullable": true,
+                "properties": {
+                  "leadership": {
+                    "type": "object"
+                  },
+                  "programming": {
+                    "type": "object"
+                  }
+                }
+              },
+              "preScreening": {
+                "type": "object",
+                "nullable": true
+              },
+              "jobAssessmentMatchScore": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "scoreInPercentage": {
+                    "type": "string"
+                  },
+                  "reasoning": {
+                    "type": "string"
+                  }
+                }
+              },
+              "proctoringRaw": {},
+              "candidateAssessmentId": {
+                "type": "string"
+              },
+              "externalCandidateAssessmentId": {
+                "type": "string",
+                "description": "Present when attachExtCandAsmntId option is true"
+              },
+              "recordingDetails": {
+                "type": "object",
+                "nullable": true,
+                "description": "Present when recordingDetails option is true",
+                "properties": {
+                  "recordingId": {
+                    "type": "string"
+                  },
+                  "recordingUrl": {
+                    "type": "string"
+                  },
+                  "recordingStatus": {
+                    "type": "string"
+                  },
+                  "interviewId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "searchAndMatchData": {
+                "type": "object",
+                "nullable": true,
+                "description": "Present when searchAndMatchData option is true"
+              },
+              "shareableLink": {
+                "type": "string",
+                "description": "Present when host is configured"
+              }
+            }
+          }
+        }
+      },
+      "InterviewResultsDataErrorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "error"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Error retrieving interview results | Interview result not found"
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "details"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "details": {
+                "type": "string"
+              }
+            }
           }
         }
       },

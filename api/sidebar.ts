@@ -22,12 +22,6 @@ const sidebar: SidebarsConfig = {
                     label: 'Attach resume to candidate',
                     className: 'api-method post',
                 },
-                {
-                    type: 'doc',
-                    id: 'api/create-candidate-assessment',
-                    label: 'Create candidate assessment',
-                    className: 'api-method post',
-                },
             ],
         },
         {
@@ -118,18 +112,18 @@ const sidebar: SidebarsConfig = {
                     label: 'Generate OAuth access token',
                     className: 'api-method post',
                 },
-                {
-                    type: 'doc',
-                    id: 'api/generate-o-auth-client-credentials',
-                    label: 'Generate OAuth client credentials',
-                    className: 'api-method post',
-                },
             ],
         },
         {
             type: 'category',
-            label: 'Search & Match',
+            label: 'Applications',
             items: [
+                {
+                    type: 'doc',
+                    id: 'api/create-candidate-assessment',
+                    label: 'Create candidate assessment',
+                    className: 'api-method post',
+                },
                 {
                     type: 'doc',
                     id: 'api/search-and-match-webhook',

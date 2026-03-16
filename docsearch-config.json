@@ -1,8 +1,8 @@
 {
     "index_name": "my-docs-local",
-    "start_urls": ["https://sp-docs-ms37qfvkx-aniketsaha-5736s-projects.vercel.app/"],
-    "sitemap_urls": ["https://sp-docs-ms37qfvkx-aniketsaha-5736s-projects.vercel.app/sitemap.xml"],
-    "allowed_domains": ["sp-docs-ms37qfvkx-aniketsaha-5736s-projects.vercel.app"],
+    "start_urls": ["https://selectprim-docs.vercel.app/"],
+    "sitemap_urls": ["https://selectprim-docs.vercel.app/sitemap.xml"],
+    "allowed_domains": ["selectprim-docs.vercel.app"],
     "selectors": {
         "lvl0": {
             "selector": ".navbar__item.navbar__link--active, .menu__link--active",
