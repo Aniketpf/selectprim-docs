@@ -1,1 +1,12 @@
-{"parameters":[{"name":"assessmentId","in":"path","required":true,"schema":{"type":"string"},"example":"assessment_123","description":"Job assessment ID"}]}
+{
+    "parameters": [
+        {
+            "name": "assessmentId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "example": "assessment_123",
+            "description": "Job assessment ID"
+        }
+    ]
+}
