@@ -18,7 +18,7 @@ const config: Config = {
     url: process.env.PRODUCTION_URL ?? 'http://localhost:3000',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
-    baseUrl: '/',
+    baseUrl: '/docs',
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
@@ -62,6 +62,7 @@ const config: Config = {
             'classic',
             {
                 docs: {
+                    routeBasePath: '/', // serve docs at baseUrl root so we get /docs/api not /docs/docs/api
                     sidebarPath: './sidebars.ts',
                     docItemComponent: '@theme/ApiItem',
                     // Please change this to your repo.
@@ -88,7 +89,6 @@ const config: Config = {
             indexName: 'my-docs-local',
             contextualSearch: false,
             searchPagePath: 'search',
-            insights: true,
         },
         navbar: {
             title: 'SelectPrism',
