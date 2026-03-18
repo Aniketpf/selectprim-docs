@@ -33,12 +33,6 @@
         "in": "header",
         "name": "x-api-key",
         "description": "API key for internal service-to-service communication"
-      },
-      "webhookApiKey": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-webhook-api-key",
-        "description": "API key for webhook authentication"
       }
     },
     "schemas": {
