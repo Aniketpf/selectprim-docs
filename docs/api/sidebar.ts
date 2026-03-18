@@ -8,6 +8,48 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Authentication",
+      items: [
+        {
+          type: "doc",
+          id: "api/generate-o-auth-access-token",
+          label: "Generate OAuth access token",
+          className: "api-method post",
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Job Assessments",
+      items: [
+        {
+          type: "doc",
+          id: "api/create-a-new-job-assessment",
+          label: "Create a new job assessment",
+          className: "api-method post",
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "Candidates",
+      items: [
+        {
+          type: "doc",
+          id: "api/add-candidates",
+          label: "Add candidates",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "api/attach-resume-to-candidate",
+          label: "Attach resume to candidate",
+          className: "api-method post",
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "Applications",
       items: [
         {
@@ -27,24 +69,6 @@ const sidebar: SidebarsConfig = {
           id: "api/get-search-and-match-data",
           label: "Get search and match data",
           className: "api-method get",
-        },
-      ],
-    },
-    {
-      type: "category",
-      label: "Candidates",
-      items: [
-        {
-          type: "doc",
-          id: "api/add-candidates",
-          label: "Add candidates",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
-          id: "api/attach-resume-to-candidate",
-          label: "Attach resume to candidate",
-          className: "api-method post",
         },
       ],
     },
@@ -81,30 +105,6 @@ const sidebar: SidebarsConfig = {
           id: "api/get-interview-results",
           label: "Get interview results",
           className: "api-method get",
-        },
-      ],
-    },
-    {
-      type: "category",
-      label: "Job Assessments",
-      items: [
-        {
-          type: "doc",
-          id: "api/create-a-new-job-assessment",
-          label: "Create a new job assessment",
-          className: "api-method post",
-        },
-      ],
-    },
-    {
-      type: "category",
-      label: "Authentication",
-      items: [
-        {
-          type: "doc",
-          id: "api/generate-o-auth-access-token",
-          label: "Generate OAuth access token",
-          className: "api-method post",
         },
       ],
     },
